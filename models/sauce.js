@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongooseUniqueValidator = require('mongoose-unique-validator');
+
 
 const sauceSchema = mongoose.Schema ({
     userId: { type: String, required: true },

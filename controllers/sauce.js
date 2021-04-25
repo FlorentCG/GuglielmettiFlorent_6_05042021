@@ -6,6 +6,7 @@ exports.createSauce = (req,res,next) => {
     delete sauceObjet._id;
     const sauce = new Sauce({
         ...sauceObjet,
+        /**Initialisation de l'objet sauce avec compteur de like à 0 */
         likes: 0,
         dislikes: 0,
         usersLiked: [],
@@ -56,7 +57,7 @@ exports.deleteSauce = (req, res, next) => {
         const filename = sauce.imageUrl.split('/images/')[1];
         fs.unlink(`images/${filename}`, () => {
             Sauce.deleteOne({ _id: req.params.id })
-            .then(() => res.status(200).json({ message: 'La sauce a bien été supprimée !'}))
+            .then(() => res.status(200).json({ message: 'Sauce  supprimée !'}))
             .catch(error => res.status(400).json({ error }));
         });
       })
@@ -69,6 +70,7 @@ exports.likeSauce = (req, res, next) => {
     const like = req.body.like;
     const userId = req.body.userId;
     const sauceId = req.params.id;
+    /**utilisation des opérateurs $push et $inc { <field1>: <value1>, ... } pour mettre à jour le compteur de like/dislike */
     if(like === 1) { 
         Sauce.updateOne({_id: sauceId}, { $inc: { likes: 1}, $push: { usersLiked: userId}, _id: req.params.id })
         .then( () => res.status(200).json({ message: 'sauce likée' }))
@@ -82,6 +84,7 @@ exports.likeSauce = (req, res, next) => {
     } 
     if (like === 0) { 
         Sauce.findOne({ _id: sauceId})
+        /**Utilisation de la méthodes includes pour vérifier la constante userID */
           .then((sauce) => {
             if (sauce.usersLiked.includes(userId)) { 
               Sauce.updateOne({_id: sauceId}, {$pull: {usersLiked: userId},$inc: {likes: -1},})
